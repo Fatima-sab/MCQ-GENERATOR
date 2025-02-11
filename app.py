@@ -8,29 +8,23 @@ from transformers import pipeline
 # Download necessary NLP resources
 nltk.download('punkt')
 
+# Load NLP models
+summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+qa_pipeline = pipeline("text2text-generation", model="valhalla/t5-base-qg-hl")
+
 # Function to extract text from a PDF
-def extract_text_from_pdf(pdf_path):
+def extract_text_from_pdf(pdf_file):
     text = ""
-    with pdfplumber.open(pdf_path) as pdf:
+    with pdfplumber.open(pdf_file) as pdf:
         for page in pdf.pages:
             extracted_text = page.extract_text()
             if extracted_text:
                 text += extracted_text + "\n"
     return text
 
-# Function to extract text from a TXT file
-def extract_text_from_txt(txt_path):
-    with open(txt_path, 'r', encoding='utf-8') as file:
-        return file.read()
-
 # Function to generate MCQs
 def generate_mcqs(text):
-    # Summarize text (optional)
-    summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
     summary = summarizer(text[:1024], max_length=150, min_length=50, do_sample=False)[0]['summary_text']
-
-    # Generate questions
-    qa_pipeline = pipeline("text2text-generation", model="valhalla/t5-base-qg-hl")
     questions = qa_pipeline(summary, max_length=100, num_return_sequences=5, do_sample=True)
 
     # Function to create MCQs with multiple options
@@ -63,7 +57,7 @@ if uploaded_file:
     text = ""
 
     if file_type == "text/plain":
-        text = extract_text_from_txt(uploaded_file)
+        text = uploaded_file.getvalue().decode("utf-8")
     elif file_type == "application/pdf":
         text = extract_text_from_pdf(uploaded_file)
 
@@ -88,5 +82,7 @@ if uploaded_file:
         # Save as CSV
         csv_filename = "generated_mcqs.csv"
         df.to_csv(csv_filename, index=False)
-        st.download_button(label="📥 Download MCQs as CSV", data=
+        st.download_button(label="📥 Download MCQs as CSV", data=df.to_csv(index=False), file_name=csv_filename, mime="text/csv")
+    else:
+        st.error("❌ No text extracted from the file!")
 
