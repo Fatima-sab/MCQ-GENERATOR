@@ -1,4 +1,3 @@
-streamlit run mcq_generator.py
 import streamlit as st
 import pdfplumber
 import nltk
@@ -89,6 +88,5 @@ if uploaded_file:
         # Save as CSV
         csv_filename = "generated_mcqs.csv"
         df.to_csv(csv_filename, index=False)
-        st.download_button(label="📥 Download MCQs as CSV", data=df.to_csv(index=False), file_name=csv_filename, mime="text/csv")
-    else:
-        st.error("❌ No text extracted from the file!")
+        st.download_button(label="📥 Download MCQs as CSV", data=
+
