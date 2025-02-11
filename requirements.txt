@@ -1,6 +1,9 @@
 streamlit
-transformers
 pdfplumber
 nltk
+transformers
+torch
 pandas
+
+
 
