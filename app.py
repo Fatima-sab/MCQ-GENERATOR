@@ -9,7 +9,7 @@ from transformers import pipeline
 nltk.download('punkt')
 
 # Load NLP models
-summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
 qa_pipeline = pipeline("text2text-generation", model="valhalla/t5-base-qg-hl")
 
 # Function to extract text from a PDF
@@ -85,4 +85,5 @@ if uploaded_file:
         st.download_button(label="📥 Download MCQs as CSV", data=df.to_csv(index=False), file_name=csv_filename, mime="text/csv")
     else:
         st.error("❌ No text extracted from the file!")
+
 
